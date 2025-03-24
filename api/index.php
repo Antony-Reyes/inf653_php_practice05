@@ -1,9 +1,12 @@
-<?php
+<?php 
+include '../config.php';
 header("Content-Type: application/json");
 
+// Get the URI and sanitize it
 $uri = explode("/", trim($_SERVER["REQUEST_URI"], "/"));
-$endpoint = $uri[count($uri) - 1];
+$endpoint = filter_var($uri[count($uri) - 1], FILTER_SANITIZE_STRING);
 
+// Check the endpoint and include the corresponding file
 switch (true) {
     case str_starts_with($endpoint, "authors"):
         require_once "authors.php";

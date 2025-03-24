@@ -1,4 +1,5 @@
 <?php
+include '../config.php';
 require_once "database.php";
 
 $database = new Database();
@@ -18,13 +19,24 @@ if ($method == "GET") {
     }
 } elseif ($method == "POST") {
     $data = json_decode(file_get_contents("php://input"), true);
-    if (!isset($data["author"])) {
-        echo json_encode(["message" => "Missing Required Parameters"]);
-        exit;
+    
+    // Define the authors to insert
+    $authors = [
+        'Dr. Seuss',
+        'Barack Obama',
+        'Taylor Swift',
+        'Donald Trump',
+        'Hillary Clinton',
+        'Lady Gaga'
+    ];
+    
+    // Insert each author into the authors table
+    foreach ($authors as $author) {
+        $stmt = $conn->prepare("INSERT INTO authors (author) VALUES (?)");
+        $stmt->execute([$author]);
     }
-    $stmt = $conn->prepare("INSERT INTO authors (author) VALUES (?)");
-    $stmt->execute([$data["author"]]);
-    echo json_encode(["id" => $conn->lastInsertId(), "author" => $data["author"]]);
+    
+    echo json_encode(["message" => "Authors inserted successfully"]);
 } elseif ($method == "PUT") {
     $data = json_decode(file_get_contents("php://input"), true);
     if (!isset($data["id"], $data["author"])) {
@@ -44,3 +56,4 @@ if ($method == "GET") {
     echo json_encode(["id" => $_GET["id"]]);
 }
 ?>
+
